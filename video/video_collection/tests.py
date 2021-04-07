@@ -464,6 +464,7 @@ class TestVideoInfo(TestCase):
 class TestDeleteVideo(TestCase):
 
     def setup(self):
+        Video.objects.delete()
         v1 = Video.objects.create(name='XYZ', notes='example', url='https://www.youtube.com/watch?v=123')
         v2 = Video.objects.create(name='ABC', notes='exampl', url='https://www.youtube.com/watch?v=456')
         v3 = Video.objects.create(name='lmn', notes='examp', url='https://www.youtube.com/watch?v=789')
@@ -473,7 +474,7 @@ class TestDeleteVideo(TestCase):
     def test_delete_video(self):
         response = self.client.post(reverse('delete_video', args=(2,)), follow=True)
         video_2 = Video.objects.filter(pk=2).first()
-        self.assertIsNone(video_2)  # Assert that the video no longer exists in the database
+        self.assertIsNone(video_2)  
 
 
     def test_delete_video_does_not_exist(self):
