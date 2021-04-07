@@ -30,3 +30,8 @@ body {
 .search-form {
     display: inline;
 }
+
+.delete {
+    background-color: crimson;
+    border-color: darkred;
+}
