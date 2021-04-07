@@ -54,3 +54,9 @@ def video_info(request, video_pk):
     # Retrive the requested video, or return 404 (not found) if the video doesn't exist
     video = get_object_or_404(Video, pk=video_pk)
     return render(request, 'video_collection/video_info.html', {'video': video})
+
+
+def delete_video(request, video_pk):
+    video = get_object_or_404(Video, pk=video_pk)
+    video.delete()
+    return redirect('video_list')

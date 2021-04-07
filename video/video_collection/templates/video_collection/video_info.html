@@ -1,6 +1,6 @@
 {% extends 'video_collection/base.html' %}
-
 {% block content %}
+{% load static %}
 
 <div>
     <h3>{{ video.name }}</h3>
@@ -10,6 +10,13 @@
         <a href="{{ video.url }}">{{ video.url }}</a>
     </p>
 </div>
+
+<form action="{% url 'delete_video' video.pk %}" method="POST">
+    {% csrf_token %}
+    <button type=submit class="delete">DELETE</button>
+</form>
+
+<script src="{% static 'js/confirm_delete.js' %}"></script>
 
 
 {% endblock %}

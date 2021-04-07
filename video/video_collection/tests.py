@@ -425,6 +425,7 @@ class TestVideoModel(TestCase):
 
 
 class TestVideoInfo(TestCase):
+
     def test_video_info_display(self):
         # Add some test data
         v1 = Video.objects.create(name='XYZ', notes='example', url='https://www.youtube.com/watch?v=123')
@@ -456,5 +457,27 @@ class TestVideoInfo(TestCase):
     def test_request_details_video_not_exist_404(self):
         # Request info for a video that doesn't exist
         response = self.client.post(reverse('video_info', args=(500,)), follow=True)
+        # Assert the response code is equal to 404 (not found)
+        self.assertEqual(404, response.status_code)
+
+
+class TestDeleteVideo(TestCase):
+
+    def setup(self):
+        v1 = Video.objects.create(name='XYZ', notes='example', url='https://www.youtube.com/watch?v=123')
+        v2 = Video.objects.create(name='ABC', notes='exampl', url='https://www.youtube.com/watch?v=456')
+        v3 = Video.objects.create(name='lmn', notes='examp', url='https://www.youtube.com/watch?v=789')
+        v4 = Video.objects.create(name='def', notes='exam', url='https://www.youtube.com/watch?v=101')
+
+
+    def test_delete_video(self):
+        response = self.client.post(reverse('delete_video', args=(2,)), follow=True)
+        video_2 = Video.objects.filter(pk=2).first()
+        self.assertIsNone(video_2)  # Assert that the video no longer exists in the database
+
+
+    def test_delete_video_does_not_exist(self):
+        # Try to delete a video that doesn't exist
+        response = self.client.post(reverse('delete_video', args=(500,)), follow=True)
         # Assert the response code is equal to 404 (not found)
         self.assertEqual(404, response.status_code)
