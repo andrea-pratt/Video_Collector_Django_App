@@ -2,13 +2,13 @@
 
 {% block content %}
 
-<h2>Video List</h2>
+<h2 class="saved-videos-title">YOUR SAVED VIDEOS:</h2>
 
-<h3>Search</h3>
+<h3>SEARCH</h3>
 
-<form method="GET" action="{% url 'video_list' %}">
+<form class="search-form" method="GET" action="{% url 'video_list' %}">
     {{ search_form }}
-    <button type="submit">Search!</button>
+    <button class="search-button" type="submit">SEARCH</button>
 </form>
 
 <a href="{% url 'video_list' %}">
@@ -20,14 +20,11 @@
 
 {% for video in videos %}
 
-    <div>
-        <h3>{{ video.name }}</h3>
-        <p>{{ video.notes }}</p>
+    <div class="video">
+        <a class="video-title" href="{% url 'video_info' video.pk %}">{{ video.name }}</a>
         <iframe width="840" height="630" src="https://youtube.com/embed/{{ video.video_id }}"></iframe>
-        <p>
-            <a href="{{ video.url }}">{{ video.url }}</a>
-        </p>
     </div>
+
 
 {% empty %}
 

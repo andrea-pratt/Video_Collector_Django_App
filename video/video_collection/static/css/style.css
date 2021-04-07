@@ -1,5 +1,7 @@
 body {
     font-size: large;
+    margin-top: 20px;
+    margin-left: 10px;
 }
 
 .navigation {
@@ -9,4 +11,22 @@ body {
 .navigation > a {
     color: lime;
     padding-right: 30px;
+}
+
+.video-title {
+    color: lightblue;
+    font-size: xx-large;
+    text-transform: uppercase;
+}
+
+.video {
+    margin: 50px;
+}
+
+.saved-videos-title {
+    font-size: xx-large;
+}
+
+.search-form {
+    display: inline;
 }

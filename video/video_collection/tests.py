@@ -36,8 +36,6 @@ class TestAddVideos(TestCase):
 
         # video list shows new video 
         self.assertContains(response, 'yoga')
-        self.assertContains(response, 'https://www.youtube.com/watch?v=4vTJHUDB5ak')
-        self.assertContains(response, 'yoga for neck and shoulders')
 
         # video count on page is correct 
         self.assertContains(response, '1 video')
@@ -79,13 +77,9 @@ class TestAddVideos(TestCase):
 
         # video 1, 
         self.assertContains(response, 'yoga')
-        self.assertContains(response, 'https://www.youtube.com/watch?v=4vTJHUDB5ak')
-        self.assertContains(response, 'yoga for neck and shoulders')
 
         # and video 2
         self.assertContains(response, 'full body workout')
-        self.assertContains(response, 'https://www.youtube.com/watch?v=IFQmOZqvtWg')
-        self.assertContains(response, '30 minutes of aerobics')
 
         # database contains two videos 
         self.assertEqual(2, Video.objects.count())
@@ -126,7 +120,6 @@ class TestAddVideos(TestCase):
 
         # video list shows new video 
         self.assertContains(response, 'yoga')
-        self.assertContains(response, 'https://www.youtube.com/watch?v=4vTJHUDB5ak')
         
         # video count on page is correct 
         self.assertContains(response, '1 video')
@@ -429,3 +422,39 @@ class TestVideoModel(TestCase):
         Video.objects.create(name='example', url='https://www.youtube.com/watch?v=IODxDxX7oi4')
         with self.assertRaises(IntegrityError):
             Video.objects.create(name='example', url='https://www.youtube.com/watch?v=IODxDxX7oi4')
+
+
+class TestVideoInfo(TestCase):
+    def test_video_info_display(self):
+        # Add some test data
+        v1 = Video.objects.create(name='XYZ', notes='example', url='https://www.youtube.com/watch?v=123')
+        v2 = Video.objects.create(name='ABC', notes='exampl', url='https://www.youtube.com/watch?v=456')
+        v3 = Video.objects.create(name='lmn', notes='examp', url='https://www.youtube.com/watch?v=789')
+        v4 = Video.objects.create(name='def', notes='exam', url='https://www.youtube.com/watch?v=101')
+        
+        # Get the video from the database with a primary key of 2
+        video_2 = Video.objects.get(pk=2)
+
+        # Record the response from the response from the view function
+        response = self.client.get(reverse('video_info', kwargs={'video_pk':2} ))
+        
+        # Ensure the expected template is used
+        self.assertTemplateUsed(response, 'video_collection/video_info.html')
+
+        # Data that was rendered in the template
+        data_rendered = response.context['video']
+
+        # The template should display the video that was sent in the response
+        self.assertEqual(data_rendered, video_2)
+
+        # Check to see that the correct data is displayed
+        self.assertContains(response, 'ABC') 
+        self.assertContains(response, 'exampl')  
+        self.assertContains(response, 'https://www.youtube.com/watch?v=456') 
+
+    
+    def test_request_details_video_not_exist_404(self):
+        # Request info for a video that doesn't exist
+        response = self.client.post(reverse('video_info', args=(500,)), follow=True)
+        # Assert the response code is equal to 404 (not found)
+        self.assertEqual(404, response.status_code)

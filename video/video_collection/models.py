@@ -10,35 +10,34 @@ class Video(models.Model):
     video_id = models.CharField(max_length=40, unique=True)
 
 
+    # Used to extract the video ID from the end of the video url before saving
     def save(self, *args, **kwargs):
-        # checks for a valid YouTube URL in the form
-        # https://www.youtube.com/watch?v=12345678
-        # where 12345678 is the video ID
-        # extract the video id from the URL, prevent save if not valid YouTube URL or id ID is not found in URL
-        try:
+        try:    # If valid url, parse for url components
             url_components = parse.urlparse(self.url)
-
-            if url_components.scheme != 'https':
+            
+            # Conditional statements to check the url against standard YouTube url pattern
+            if url_components.scheme != 'https':  
                 raise ValidationError(f'Not a YouTube URL {self.url}')
 
-            if url_components.netloc != 'www.youtube.com':
+            if url_components.netloc != 'www.youtube.com':   
                 raise ValidationError(f'Not a YouTube URL {self.url}')
                 
             if url_components.path != '/watch':
                 raise ValidationError(f'Not a YouTube URL {self.url}')
             
             query_string = url_components.query
-            if not query_string:
+            if not query_string: # If the url is an empty string, raise an error
                 raise ValidationError(f'Invalid YouTube URL {self.url}')
             parameters = parse.parse_qs(query_string, strict_parsing=True)
             parameter_list = parameters.get('v')
-            if not parameter_list:   # empty string, empty list... 
+            if not parameter_list:   
                 raise ValidationError(f'Invalid YouTube URL parameters {self.url}')
-            self.video_id = parameter_list[0]   # set the video ID for this Video object 
-        except ValueError as e:   # URL parsing errors, malformed URLs
+            self.video_id = parameter_list[0] # Extract the video id from the first (and typically only) item in the list
+        except ValueError as e:  # If any of the url parsing statements fail, raise a generic error 
             raise ValidationError(f'Unable to parse URL {self.url}') from e
 
-        super().save(*args, **kwargs)  # don't forget!
+        # Call the default Django save function to save the modified video to the database
+        super().save(*args, **kwargs)  
 
 
     def __str__(self):
